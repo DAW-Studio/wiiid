@@ -2,19 +2,22 @@ import time
 
 class Button:
     def __init__(self, wiiid, name:str, value:int=0, time:float=-1):
+        self.wiiid = wiiid
         self.name = name
         self.value = value
         self.time = time
         self.cycle = 0
+        self.holding = False
 
     def state(self, btnState:bool):
         if btnState:
             if self.value == 0:
                 self.pressed()
+            if self.time != -1 and time.time()-self.time > .5 and not self.holding:
+                self.wiiid.heldButtons.append(self)
+                return self.hold()
         elif self.value == 1:
             return self.released()
-        if self.time != -1 and time.time() - self.time > 0.5:
-            return self.held()
         return None
 
     def pressed(self):
@@ -24,8 +27,14 @@ class Button:
     def released(self):
         self.value = 0
         self.time = -1
-        return ["tap", self.name]
+        if not self.holding:
+            return ["tap", self.name]
+        else:
+            self.holding = False
+            self.wiiid.heldButtons.remove(self)
+            return ["release", self.name]
 
-    def held(self):
+    def hold(self):
         self.time = -1
-        # return ["hold", self.name] 
+        self.holding = True
+        return ["hold", self.name] 

@@ -39,6 +39,12 @@ class Wii:
         else:
             self.device = hid.Device(vendor_id, product_id)
             self.prev_data = 0
+            self.device.write(bytes([0x52, 0x15, 0x00]))
+            time.sleep(0.1)
+            data = self.device.read(32)
+            self._leds = [0,0,0,0]
+
+
 
     
     def state(self):
@@ -49,7 +55,7 @@ class Wii:
             raise WiiHidError(error)
             return None
         data = data[1]|data[2]<<8
-        if data == self.prev_data:
+        if data == 0 and self.prev_data == 0:
             return None
         self.prev_data = data
         buttons = {
@@ -66,6 +72,7 @@ class Wii:
             "up": (data & BTN_UP) != 0
         }
         return buttons
+
     
     def rumble(self, seconds:float=0.3):
         rumble_on = [0x52, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00] 
@@ -73,6 +80,21 @@ class Wii:
         self.device.write(bytes(rumble_on))
         time.sleep(seconds)
         self.device.write(bytes(rumble_off))
+
+
+    @property
+    def leds(self):
+        return self._leds
+    
+    @leds.setter
+    def leds(self, l:list[int,int,int,int]):
+        l1 = 0x10 if l[0] == 1 else 0x00
+        l2 = 0x20 if l[1] == 1 else 0x00
+        l3 = 0x40 if l[2] == 1 else 0x00
+        l4 = 0x80 if l[3] == 1 else 0x00
+        self.device.write(bytes([0x11, l1|l2|l3|l4]))
+        self._leds = l
+
 
     def close(self):
         self.device.close()

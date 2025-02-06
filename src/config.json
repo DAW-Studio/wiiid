@@ -1,0 +1,97 @@
+{
+    "leds": [
+        [1,0,0,0]
+    ],
+    "mappings": [
+        {
+            "tap": {
+                "a": {
+                    "device": "keyboard",
+                    "action": "cycle",
+                    "args": {
+                        "keys": [
+                            ["b", ""],
+                            ["e", ""]
+                        ]
+                    }
+                },
+                "left": {
+                    "device": "keyboard",
+                    "action": "tap",
+                    "args": {
+                        "mod": "cmd",
+                        "key": "z"
+                    }
+                },
+                "right": {
+                    "device": "keyboard",
+                    "action": "tap",
+                    "args": {
+                        "mod": "cmd",
+                        "key": "y"
+                    }
+                },
+                "up": {
+                    "device": "keyboard",
+                    "action": "tap",
+                    "args": {
+                        "mod": "",
+                        "key": "."
+                    }
+                },
+                "down": {
+                    "device": "keyboard",
+                    "action": "tap",
+                    "args": {
+                        "mod": "",
+                        "key": ","
+                    }
+                },
+                "minus": {
+                    "device": "keyboard",
+                    "action": "tap",
+                    "args": {
+                        "mod": "",
+                        "key": "z"
+                    }
+                },
+                "plus": {
+                    "device": "keyboard",
+                    "action": "tap",
+                    "args": {
+                        "mod": "cmd",
+                        "key": "x"
+                    }
+                },
+                "1": {
+                    "device": "keyboard",
+                    "action": "tap",
+                    "args": {
+                        "mod": "cmd",
+                        "key": "v"
+                    }
+                }
+            },
+            "hold": {
+                "down": {
+                    "device": "keyboard",
+                    "action": "tap",
+                    "args": {
+                        "mod": "",
+                        "key": "["
+                    }
+                }
+            },
+            "release": {
+            }
+        },
+        {
+            "tap": {
+                "minus": "actions.debug.reloadConf(self)"
+            },
+            "hold": {
+                "home": "self.dubg = False; self.leds = [0,0,0,0]"
+            }
+        }
+    ]
+}
