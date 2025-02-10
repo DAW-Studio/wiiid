@@ -1,16 +1,15 @@
-from PySide6 import QtCore, QtWidgets, QtGui
+# main.py
 import sys
-import json
-import time
+from PySide6.QtWidgets import QApplication
+from ui.main_window import MainWindow
+from wiimote.interface import WiiiD
 
-from ui.app import Window
-
+def main():
+    app = QApplication([])
+    # window = MainWindow(wiiid)
+    window = MainWindow()
+    window.show()
+    app.exec()
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication([])
-
-    window = Window()
-    window.resize(800, 600)
-    window.show()
-
-    sys.exit(app.exec())
+    main()
