@@ -14,7 +14,11 @@ from PySide6.QtWidgets import (
     QGraphicsPixmapItem,
     QGraphicsView
 )
-from PySide6.QtCore import Qt, QPoint 
+from PySide6.QtCore import (
+    Qt,
+    QPoint,
+    QRect
+)
 from PySide6.QtGui import (
     QMouseEvent,
     QColor,
@@ -24,8 +28,15 @@ from PySide6.QtGui import (
     QPen
 )
 import time
-from wiimote.interface import WiiiD
+# from wiimote.interface import WiiiD
 import os
+
+from quilt.window import MainCustomWindow
+from quilt.layout import VBoxLayout
+
+from wiimote.interface import WiiiD
+
+from ui.titlebar import TitleBar
 
 
 class WiimoteWidget:
@@ -97,100 +108,82 @@ class BurgerButton(QPushButton):
         print("Burger menu clicked!")
 
 
-class TitleBar(QWidget):
-    """Custom title bar with a centered search bar, perfectly aligned with macOS buttons."""
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setFixedHeight(28)
-        self.setAttribute(Qt.WA_StyledBackground, True)
-        self.setStyleSheet("background-color: white; border-bottom-left-radius: 0px; border-bottom-right-radius: 0px; border-bottom: .5px solid #959595")
 
 
-        layout = QHBoxLayout()
-        layout.setContentsMargins(12, 0, 12, 0)  
-        layout.setSpacing(0)
-
-        self.close_button = CircularButton(self)
-        self.close_button.setFixedSize(12, 12)
-
-        self.menuButton = BurgerButton(self)
-        self.menuButton.setFixedSize(18,13)
-
-        layout.addWidget(self.close_button)
-        layout.addSpacing(10) 
-
-        layout.addStretch()
-
-        self.title = QLabel(self)
-        self.title.setText("WiiiD")
-        self.title.setStyleSheet("color: #959595; font: Menlo;")
-        layout.addWidget(self.title)
-
-        layout.addStretch()
-
-        layout.addWidget(self.menuButton, alignment=Qt.AlignmentFlag.AlignRight)
-
-        self.setLayout(layout)
-
-    def mousePressEvent(self, event: QMouseEvent):
-        """Allow window dragging from the custom title bar."""
-        if event.button() == Qt.LeftButton:
-            self._drag_pos = event.globalPosition().toPoint()
-            event.accept()
-
-    def mouseMoveEvent(self, event: QMouseEvent):
-        """Handle window movement."""
-        if event.buttons() == Qt.LeftButton:
-            self.window().move(self.window().pos() + event.globalPosition().toPoint() - self._drag_pos)
-            self._drag_pos = event.globalPosition().toPoint()
-            event.accept()
-
-
-class MainWindow(QMainWindow):
+class MainWindow(MainCustomWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowFlags(Qt.FramelessWindowHint)  # Remove default title bar
-        self.setAttribute(Qt.WA_TranslucentBackground)  # Enable transparency for rounded corners
-        self.setGeometry(100, 100, 1200, 800)
+        self.setFloatingWindow(True)
+        geometry = self.envGeometry()
+        if not geometry: geometry = QRect(100,100,650,700)
+        self.setGeometry(geometry)
 
-        self.title_bar = TitleBar(self)
-        self.setContentsMargins(0,0,0,0)
+        self.central_widget = QWidget()
 
-        # Main content area
-        main_content = QWidget()
-        main_content.setStyleSheet("background-color: rgba(255, 255, 255, 255); border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;")
+        style = "background: white"
 
-        shadow = QGraphicsDropShadowEffect(self)
-        shadow.setBlurRadius(90)  # Soft shadow like macOS
-        shadow.setXOffset(0)
-        shadow.setColor(QColor(0, 0, 0))  # Light black shadow
+        content = QWidget()
+        content.setStyleSheet(style)
+        status_bar = QWidget()
+        status_bar.setFixedHeight(10)
+        status_bar.setStyleSheet(style)
 
-        # Apply a blur effect to the background
-        blur_effect = QGraphicsBlurEffect()
-        blur_effect.setBlurRadius(100)  # Adjust the blur radius for desired effect
+        layout = VBoxLayout([
+            TitleBar(self),
+            WiimoteWidget().graphicsView,
+            {"spacing": 10},
+            status_bar
+        ])
 
-        container = QWidget()
-        container.setLayout(QVBoxLayout())
-        container.layout().setContentsMargins(0, 0, 0, 0)
-        container.layout().setSpacing(0)
-        container.layout().addWidget(self.title_bar)
-        container.layout().addWidget(main_content)
-        container.setStyleSheet("border-radius: 12px; background-color: rgba(255, 255, 255, 180);")  # Rounded edges with transparency
-        container.setGraphicsEffect(shadow)  # Apply shadow effect
+        self.central_widget.setLayout(layout)
 
-        # Apply the blur effect to the container widget
-        container.setGraphicsEffect(blur_effect)
+        self.setCentralWidget(self.central_widget)
 
-        self.wiimoteWidget = WiimoteWidget()
-        layout = QVBoxLayout()
-        layout.addWidget(self.wiimoteWidget.graphicsView)
-        container.layout().addChildLayout(layout)
 
-        self.setCentralWidget(container)
-        self.wiiid = WiiiD()
-        self.interface()
+        # self.title_bar = TitleBar(self)
+        # self.setContentsMargins(0,0,0,0)
+
+        # # Main content area
+        # main_content = QWidget()
+        # main_content.setStyleSheet("background-color: rgba(255, 255, 255, 255); border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;")
+
+        # shadow = QGraphicsDropShadowEffect(self)
+        # shadow.setBlurRadius(90)  # Soft shadow like macOS
+        # shadow.setXOffset(0)
+        # shadow.setColor(QColor(0, 0, 0))  # Light black shadow
+
+        # # Apply a blur effect to the background
+        # blur_effect = QGraphicsBlurEffect()
+        # blur_effect.setBlurRadius(100)  # Adjust the blur radius for desired effect
+
+        # container = QWidget()
+        # container.setLayout(QVBoxLayout())
+        # container.layout().setContentsMargins(0, 0, 0, 0)
+        # container.layout().setSpacing(0)
+        # container.layout().addWidget(self.title_bar)
+        # # container.layout().addWidget(main_content)
+        # # container.setStyleSheet("border-radius: 12px; background-color: rgba(255, 255, 255, 180);")  # Rounded edges with transparency
+        # container.setGraphicsEffect(shadow)  # Apply shadow effect
+
+        # # Apply the blur effect to the container widget
+        # container.setGraphicsEffect(blur_effect)
+
+        # # self.wiimoteWidget = WiimoteWidget()
+        # # layout = QVBoxLayout()
+        # # layout.addWidget(self.wiimoteWidget.graphicsView)
+        # # container.layout().addChildLayout(layout)
+
+        # circle = QLabel()
+        # circle.setFixedSize(50,50)
+        # circle.setStyleSheet("background: white; border-radius: 25px")
+        # container.layout().addWidget(circle)
+
+        # self.setCentralWidget(container)
+        # self.wiiid = WiiiD()
+        # self.interface()
 
         # WiiiD
+
     @QtCore.Slot()
     def interface(self):
         self.wiiid.signal.connect(self.process_wiiid_data)
@@ -198,18 +191,16 @@ class MainWindow(QMainWindow):
 
     def process_wiiid_data(self, data):
         btn = data[0].name
-        for button in self.wiimoteWidget.selected.keys():
-            if button in ["left", "right", "up", "down"]:
-                unselected = self.wiimoteWidget.unselected["dpad"]
-            else:
-                unselected = self.wiimoteWidget.unselected[button]
-            selected = self.wiimoteWidget.selected[button]
-            if btn and not selected.isVisible():
-                selected.setVisible(True)
-                unselected.setVisible(False)
-            elif not btn and selected.isVisible():
-                selected.setVisible(False)
-                unselected.setVisible(True)
+        # for button in self.wiimoteWidget.selected.keys():
+        #     if button in ["left", "right", "up", "down"]:
+        #         unselected = self.wiimoteWidget.unselected["dpad"]
+        #     else:
+        #         unselected = self.wiimoteWidget.unselected[button]
+        #     selected = self.wiimoteWidget.selected[button]
+        #     if btn and not selected.isVisible():
+        #         selected.setVisible(True)
+        #         unselected.setVisible(False)
+        #     elif not btn and selected.isVisible():
+        #         selected.setVisible(False)
+        #         unselected.setVisible(True)
         print(btn)
-
-
