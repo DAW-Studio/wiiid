@@ -17,7 +17,8 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import (
     Qt,
     QPoint,
-    QRect
+    QRect,
+    QEvent
 )
 from PySide6.QtGui import (
     QMouseEvent,
@@ -31,44 +32,46 @@ import time
 # from wiimote.interface import WiiiD
 import os
 
-from quilt.window import MainCustomWindow
+from quilt.widget import MainCustomWindow
 from quilt.layout import VBoxLayout
 
 from wiimote.interface import WiiiD
 
 from ui.titlebar import TitleBar
+from ui.menus.pie import PieMenu
+from ui.widgets.wiimote import WiimoteWidget
 
 
-class WiimoteWidget:
-    def __init__(self) -> None:
-        scene = QGraphicsScene()
-        body_back_image = QGraphicsPixmapItem(QPixmap("src/resources/images/wiimote/body_back.png"))
-        scene.addItem(body_back_image)
+# class WiimoteWidget:
+#     def __init__(self) -> None:
+#         scene = QGraphicsScene()
+#         body_back_image = QGraphicsPixmapItem(QPixmap("src/resources/images/wiimote/body_back.png"))
+#         scene.addItem(body_back_image)
 
-        self.unselected = {}
-        for i in os.listdir("src/resources/images/wiimote/unselected"):
-            if i.endswith(".png"):
-                btn = i.strip(".png")
-                self.unselected[btn] = QGraphicsPixmapItem(QPixmap(f"src/resources/images/wiimote/unselected/{i}"))
-                scene.addItem(self.unselected[btn])
+#         self.unselected = {}
+#         for i in os.listdir("src/resources/images/wiimote/unselected"):
+#             if i.endswith(".png"):
+#                 btn = i.strip(".png")
+#                 self.unselected[btn] = QGraphicsPixmapItem(QPixmap(f"src/resources/images/wiimote/unselected/{i}"))
+#                 scene.addItem(self.unselected[btn])
 
-        self.selected = {}
-        for i in os.listdir("src/resources/images/wiimote/selected"):
-            if i.endswith(".png"):
-                btn = i.strip(".png")
-                self.selected[btn] = QGraphicsPixmapItem(QPixmap(f"src/resources/images/wiimote/selected/{i}"))
-                self.selected[btn].setVisible(False)
-                scene.addItem(self.selected[btn])
+#         self.selected = {}
+#         for i in os.listdir("src/resources/images/wiimote/selected"):
+#             if i.endswith(".png"):
+#                 btn = i.strip(".png")
+#                 self.selected[btn] = QGraphicsPixmapItem(QPixmap(f"src/resources/images/wiimote/selected/{i}"))
+#                 self.selected[btn].setVisible(False)
+#                 scene.addItem(self.selected[btn])
 
-        body_front_image = QGraphicsPixmapItem(QPixmap("src/resources/images/wiimote/body_front.png"))
-        scene.addItem(body_front_image)
+#         body_front_image = QGraphicsPixmapItem(QPixmap("src/resources/images/wiimote/body_front.png"))
+#         scene.addItem(body_front_image)
         
 
-        self.graphicsView = QGraphicsView()
+#         self.graphicsView = QGraphicsView()
 
-        self.graphicsView.setScene(scene)
-        self.graphicsView.setStyleSheet("background: white;")
-        # self.graphicsView.setBackgroundBrush(QtGui.QBrush(QtGui.QColor("white")))
+#         self.graphicsView.setScene(scene)
+#         self.graphicsView.setStyleSheet("background: white;")
+#         # self.graphicsView.setBackgroundBrush(QtGui.QBrush(QtGui.QColor("white")))
 
 
 
@@ -108,19 +111,26 @@ class BurgerButton(QPushButton):
         print("Burger menu clicked!")
 
 
-
+# CREATE A STYLESHEET.QSS
 
 class MainWindow(MainCustomWindow):
     def __init__(self):
         super().__init__()
-        self.setFloatingWindow(True)
+
+        self.wiiid = WiiiD(self)
+        self.interface()
+
+        # self.setStyleSheet("background: white")
+        self.setTransparentWindow(True)
+        # self.setFloatingWindow(True)
+        # self.setWindowFlag(Qt.Wi1ndowDoesNotAcceptFocus, True)
         geometry = self.envGeometry()
         if not geometry: geometry = QRect(100,100,650,700)
         self.setGeometry(geometry)
 
         self.central_widget = QWidget()
 
-        style = "background: white"
+        style = "background-color: white"
 
         content = QWidget()
         content.setStyleSheet(style)
@@ -130,8 +140,7 @@ class MainWindow(MainCustomWindow):
 
         layout = VBoxLayout([
             TitleBar(self),
-            WiimoteWidget().graphicsView,
-            {"spacing": 10},
+            content,
             status_bar
         ])
 
@@ -147,14 +156,6 @@ class MainWindow(MainCustomWindow):
         # main_content = QWidget()
         # main_content.setStyleSheet("background-color: rgba(255, 255, 255, 255); border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;")
 
-        # shadow = QGraphicsDropShadowEffect(self)
-        # shadow.setBlurRadius(90)  # Soft shadow like macOS
-        # shadow.setXOffset(0)
-        # shadow.setColor(QColor(0, 0, 0))  # Light black shadow
-
-        # # Apply a blur effect to the background
-        # blur_effect = QGraphicsBlurEffect()
-        # blur_effect.setBlurRadius(100)  # Adjust the blur radius for desired effect
 
         # container = QWidget()
         # container.setLayout(QVBoxLayout())
@@ -168,19 +169,21 @@ class MainWindow(MainCustomWindow):
         # # Apply the blur effect to the container widget
         # container.setGraphicsEffect(blur_effect)
 
-        # # self.wiimoteWidget = WiimoteWidget()
-        # # layout = QVBoxLayout()
-        # # layout.addWidget(self.wiimoteWidget.graphicsView)
-        # # container.layout().addChildLayout(layout)
+        self.wiimoteWidget = WiimoteWidget(self.wiiid)
+        layout = VBoxLayout()
+        content.setLayout(VBoxLayout([
+            self.wiimoteWidget.view
+        ]))
 
         # circle = QLabel()
         # circle.setFixedSize(50,50)
         # circle.setStyleSheet("background: white; border-radius: 25px")
         # container.layout().addWidget(circle)
 
+        self.pie_menu = PieMenu(self)
+        self.window_blocked = False
+
         # self.setCentralWidget(container)
-        # self.wiiid = WiiiD()
-        # self.interface()
 
         # WiiiD
 
@@ -190,7 +193,11 @@ class MainWindow(MainCustomWindow):
         self.wiiid.start()
 
     def process_wiiid_data(self, data):
-        btn = data[0].name
+        if isinstance(data[0], dict):
+            if data[0]["action"] == "pie":
+                self.pie_menu.show()
+        else: 
+            btn = data[0].name
         # for button in self.wiimoteWidget.selected.keys():
         #     if button in ["left", "right", "up", "down"]:
         #         unselected = self.wiimoteWidget.unselected["dpad"]
@@ -203,4 +210,4 @@ class MainWindow(MainCustomWindow):
         #     elif not btn and selected.isVisible():
         #         selected.setVisible(False)
         #         unselected.setVisible(True)
-        print(btn)
+            print(btn)

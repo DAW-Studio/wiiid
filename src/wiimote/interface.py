@@ -7,10 +7,17 @@ from . import WiiHid, WiiHidError, Button, actions
 from PySide6.QtCore import QThread, Signal
 
 
+def resource_path(path):
+    if hasattr(sys, "_MEIPASS"):
+        return os.path.join(sys._MEIPASS, path)
+    return os.path.join(os.path.abspath("."), path)
+
+
 class WiiiD(QThread):
     signal = Signal(list)
-    def __init__(self) -> None:
+    def __init__(self, parent) -> None:
         super().__init__()
+        self.parent = parent
         self.debug = False
         self.buttons = {
             "a": Button(self, "a"),
@@ -27,7 +34,7 @@ class WiiiD(QThread):
         }
         self.heldButtons = []
         self.currentMap = 0
-        with open(f"src/resources/mappings.json") as f:
+        with open(resource_path("resources/mappings.json")) as f:
             self.config = json.load(f)
 
     def run(self):
@@ -74,7 +81,10 @@ class WiiiD(QThread):
                 exec(mapping)
             else:
                 mapping = self.config["mappings"][self.currentMap][action][btn]
-                actions.run[mapping["device"]][mapping["action"]](self, button, mapping["args"])
+                if mapping["device"] == "wiiid":
+                    self.signal.emit([mapping])
+                else:
+                    actions.run[mapping["device"]][mapping["action"]](self, button, mapping["args"])
         except KeyError as e:
             print(e)
         

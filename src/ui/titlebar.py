@@ -32,8 +32,8 @@ class TitleBar(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setFixedHeight(28)
-        # self.setAttribute(Qt.WA_StyledBackground, True)
-        self.setStyleSheet("background-color: white; border-bottom-left-radius: 0px; border-bottom-right-radius: 0px; border-bottom: .5px solid #959595")
+        self.setAttribute(Qt.WA_StyledBackground, True)
+        self.setStyleSheet("background-color: white; border-top-right-radius: 12px; border-top-left-radius: 12px; border-bottom-left-radius: 0px; border-bottom-right-radius: 0px; border-bottom: .5px solid #959595")
 
         self.title = QLabel(self)
         self.title.setText("WiiiD")
@@ -46,19 +46,6 @@ class TitleBar(QWidget):
             {"stretch": 1}
         ])
         layout.setContentsMargins(12, 0, 12, 0)  
-
-        # # self.menuButton = BurgerButton(self)
-        # # self.menuButton.setFixedSize(18,13)
-
-        # layout.addWidget(self.close_button)
-        # layout.addSpacing(10) 
-
-        # layout.addStretch()
-
-
-        # layout.addStretch()
-
-        # layout.addWidget(self.menuButton, alignment=Qt.AlignmentFlag.AlignRight)
 
         self.setLayout(layout)
 

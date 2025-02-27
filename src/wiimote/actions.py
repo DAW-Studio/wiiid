@@ -72,22 +72,26 @@ class KeyboardDevice():
 #         print(direction, amount, speed)
 
 
-# class WiiidDevice():
-#     def __init__(self) -> None:
-#         pass
+class WiiidDevice():
+    def __init__(self) -> None:
+        pass
     
-#     def delay(self, btn, duration:float):
-#         time.sleep(1)
+    def delay(self, btn, duration:float):
+        time.sleep(1)
 
-#     def macro(self, btn, actions:list):
-#         for m in actions:
-#             run[m["device"]][m["action"]](btn,*m["args"])
+    def macro(self, btn, actions:list):
+        for m in actions:
+            run[m["device"]][m["action"]](btn,*m["args"])
+    
+    def pie(self, wiiid, btn, args:list):
+        wiiid.parent.pie_menu.show()
+        
 
 
 debug = Debug()
 kd = KeyboardDevice()
 # md = MouseDevice()
-# wd = WiiidDevice()
+wd = WiiidDevice()
 run = {
     "keyboard": {
         "tap": kd.tap,
@@ -95,7 +99,7 @@ run = {
         "release": kd.release,
         "cycle": kd.cycle,
         "type": kd.type
-    }#,
+    },
     # "mouse": {
     #     "click": md.click,
     #     "hold": md.hold,
@@ -103,8 +107,9 @@ run = {
     #     "drag": md.drag,
     #     "scroll": md.scroll
     # },
-    # "wiiid": {
-    #     "delay": wd.delay,
-    #     "macro": wd.macro
-    # }
+    "wiiid": {
+        "delay": wd.delay,
+        "macro": wd.macro,
+        "pie": wd.pie
+    }
 }

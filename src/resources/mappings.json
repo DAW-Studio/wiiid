@@ -70,6 +70,11 @@
                         "mod": "cmd",
                         "key": "v"
                     }
+                },
+                "home": {
+                    "device": "wiiid",
+                    "action": "pie",
+                    "args": {}
                 }
             },
             "hold": {
