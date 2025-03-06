@@ -33,7 +33,7 @@ class TitleBar(QWidget):
         super().__init__(parent)
         self.setFixedHeight(28)
         self.setAttribute(Qt.WA_StyledBackground, True)
-        self.setStyleSheet("background-color: white; border-top-right-radius: 12px; border-top-left-radius: 12px; border-bottom-left-radius: 0px; border-bottom-right-radius: 0px; border-bottom: .5px solid #959595")
+        self.setStyleSheet("background-color: white; border-top-right-radius: 0; border-top-left-radius: 12px; border-bottom-left-radius: 0px; border-bottom-right-radius: 0px; border-bottom: .5px solid #959595")
 
         self.title = QLabel(self)
         self.title.setText("WiiiD")

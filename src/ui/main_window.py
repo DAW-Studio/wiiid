@@ -33,7 +33,8 @@ import time
 import os
 
 from quilt.widget import MainCustomWindow
-from quilt.layout import VBoxLayout
+from quilt.layout import VBoxLayout, HBoxLayout
+from quilt.core import loop
 
 from wiimote.interface import WiiiD
 
@@ -117,7 +118,8 @@ class MainWindow(MainCustomWindow):
     def __init__(self):
         super().__init__()
 
-        self.wiiid = WiiiD(self)
+        self.wiimote_widget = WiimoteWidget()
+        self.wiiid = WiiiD(self, self.wiimote_widget)
         self.interface()
 
         # self.setStyleSheet("background: white")
@@ -132,22 +134,40 @@ class MainWindow(MainCustomWindow):
 
         style = "background-color: white"
 
+        title_bar = TitleBar(self)
+        title_bar.setFixedWidth(300)
         content = QWidget()
+        content.setFixedWidth(300)
         content.setStyleSheet(style)
         status_bar = QWidget()
         status_bar.setFixedHeight(10)
         status_bar.setStyleSheet(style)
+        status_bar.setFixedWidth(300)
 
-        layout = VBoxLayout([
-            TitleBar(self),
+
+        wiimote_layout = VBoxLayout([
+            title_bar,
             content,
             status_bar
         ])
 
-        self.central_widget.setLayout(layout)
+        self.mapping_widget = QWidget()
+        # mapping_widget.setFixedWidth(100)
+        self.mapping_widget.setAttribute(Qt.WA_StyledBackground, True)
+        self.mapping_widget.setStyleSheet("background: red")
+        # mapping_widget.
+        button = QPushButton("text")
+        mapping_layout = VBoxLayout()
+        self.main_layout = HBoxLayout([
+            wiimote_layout,
+            # {"spacing": 10},
+            self.mapping_widget,
+        ])
+        # self.main_layout.reversed = False
+
+        self.central_widget.setLayout(self.main_layout)
 
         self.setCentralWidget(self.central_widget)
-
 
         # self.title_bar = TitleBar(self)
         # self.setContentsMargins(0,0,0,0)
@@ -169,10 +189,9 @@ class MainWindow(MainCustomWindow):
         # # Apply the blur effect to the container widget
         # container.setGraphicsEffect(blur_effect)
 
-        self.wiimoteWidget = WiimoteWidget(self.wiiid)
         layout = VBoxLayout()
         content.setLayout(VBoxLayout([
-            self.wiimoteWidget.view
+            self.wiimote_widget.view
         ]))
 
         # circle = QLabel()
@@ -187,6 +206,23 @@ class MainWindow(MainCustomWindow):
 
         # WiiiD
 
+    def resizeEvent(self, event):
+        return super().resizeEvent(event)
+
+    def moveEvent(self, event):
+        pos = event.pos()
+        # if not self.screen().geometry().contains(pos.x()+self.width(), 0):
+        #     if not self.main_layout.reversed:
+        #         self.main_layout.reversed = True
+        #         self.main_layout.structure.reverse()
+        #         self.main_layout.structure = self.main_layout.structure
+        #         self.setGeometry(self.x()-self.mapping_widget.width(),self.y(),self.width(),self.height())
+        # elif self.main_layout.reversed:
+        #     self.main_layout.reversed = False
+        #     self.main_layout.structure.reverse()
+        #     self.main_layout.structure = self.main_layout.structure
+        return super().moveEvent(event)
+
     @QtCore.Slot()
     def interface(self):
         self.wiiid.signal.connect(self.process_wiiid_data)
@@ -197,7 +233,14 @@ class MainWindow(MainCustomWindow):
             if data[0]["action"] == "pie":
                 self.pie_menu.show()
         else: 
+            # print(data[0])
             btn = data[0].name
+            print(btn)
+            if btn == "left":
+                self.wiiid.setLeds([0,0,0,0])
+            if btn == "right":
+                self.wiiid.setLeds([1,0,1,0])
+
         # for button in self.wiimoteWidget.selected.keys():
         #     if button in ["left", "right", "up", "down"]:
         #         unselected = self.wiimoteWidget.unselected["dpad"]

@@ -82,7 +82,6 @@ class WiiHid:
     
     @leds.setter
     def leds(self, l:list[int,int,int,int]):
-        print(l)
         l1 = 0x10 if l[0] == 1 else 0x00
         l2 = 0x20 if l[1] == 1 else 0x00
         l3 = 0x40 if l[2] == 1 else 0x00
