@@ -11,7 +11,7 @@ class Debug():
         pass
 
     def reloadConf(self, wiiid):
-        with open("src/config.json") as f:
+        with open("config.json") as f:
            wiiid.config = json.load(f) 
         print("Reloaded Config")
 

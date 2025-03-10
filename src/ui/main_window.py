@@ -12,7 +12,8 @@ from PySide6.QtWidgets import (
     QGraphicsBlurEffect,
     QGraphicsScene,
     QGraphicsPixmapItem,
-    QGraphicsView
+    QGraphicsView,
+    QSizePolicy
 )
 from PySide6.QtCore import (
     Qt,
@@ -40,7 +41,8 @@ from wiimote.interface import WiiiD
 
 from ui.titlebar import TitleBar
 from ui.menus.pie import PieMenu
-from ui.widgets.wiimote import WiimoteWidget
+from ui.wiimote import WiimoteWidget
+from ui.mapping import Mapping
 
 
 # class WiimoteWidget:
@@ -112,97 +114,47 @@ class BurgerButton(QPushButton):
         print("Burger menu clicked!")
 
 
-# CREATE A STYLESHEET.QSS
-
 class MainWindow(MainCustomWindow):
     def __init__(self):
         super().__init__()
 
-        self.wiimote_widget = WiimoteWidget()
+        self.wiimote_widget = WiimoteWidget(self)
         self.wiiid = WiiiD(self, self.wiimote_widget)
         self.interface()
 
-        # self.setStyleSheet("background: white")
         self.setTransparentWindow(True)
-        # self.setFloatingWindow(True)
-        # self.setWindowFlag(Qt.Wi1ndowDoesNotAcceptFocus, True)
+        self.setFloatingWindow(True)
         geometry = self.envGeometry()
         if not geometry: geometry = QRect(100,100,650,700)
         self.setGeometry(geometry)
 
         self.central_widget = QWidget()
 
-        style = "background-color: white"
-
         title_bar = TitleBar(self)
-        title_bar.setFixedWidth(300)
-        content = QWidget()
-        content.setFixedWidth(300)
-        content.setStyleSheet(style)
         status_bar = QWidget()
         status_bar.setFixedHeight(10)
-        status_bar.setStyleSheet(style)
-        status_bar.setFixedWidth(300)
+        status_bar.setObjectName("status-bar")
 
-
-        wiimote_layout = VBoxLayout([
+        self.wiimote_section = QWidget()
+        self.wiimote_section.setFixedWidth(260)
+        self.wiimote_section.setLayout(VBoxLayout([
             title_bar,
-            content,
+            self.wiimote_widget,
             status_bar
-        ])
+        ]))
 
-        self.mapping_widget = QWidget()
-        # mapping_widget.setFixedWidth(100)
-        self.mapping_widget.setAttribute(Qt.WA_StyledBackground, True)
-        self.mapping_widget.setStyleSheet("background: red")
-        # mapping_widget.
-        button = QPushButton("text")
-        mapping_layout = VBoxLayout()
-        self.main_layout = HBoxLayout([
-            wiimote_layout,
-            # {"spacing": 10},
+        self.mapping_widget = Mapping(self)
+
+        self.central_widget.setLayout(HBoxLayout([
+            self.wiimote_section,
             self.mapping_widget,
-        ])
-        # self.main_layout.reversed = False
-
-        self.central_widget.setLayout(self.main_layout)
+        ], alignment=Qt.AlignmentFlag.AlignLeft))
 
         self.setCentralWidget(self.central_widget)
 
-        # self.title_bar = TitleBar(self)
-        # self.setContentsMargins(0,0,0,0)
 
-        # # Main content area
-        # main_content = QWidget()
-        # main_content.setStyleSheet("background-color: rgba(255, 255, 255, 255); border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;")
-
-
-        # container = QWidget()
-        # container.setLayout(QVBoxLayout())
-        # container.layout().setContentsMargins(0, 0, 0, 0)
-        # container.layout().setSpacing(0)
-        # container.layout().addWidget(self.title_bar)
-        # # container.layout().addWidget(main_content)
-        # # container.setStyleSheet("border-radius: 12px; background-color: rgba(255, 255, 255, 180);")  # Rounded edges with transparency
-        # container.setGraphicsEffect(shadow)  # Apply shadow effect
-
-        # # Apply the blur effect to the container widget
-        # container.setGraphicsEffect(blur_effect)
-
-        layout = VBoxLayout()
-        content.setLayout(VBoxLayout([
-            self.wiimote_widget.view
-        ]))
-
-        # circle = QLabel()
-        # circle.setFixedSize(50,50)
-        # circle.setStyleSheet("background: white; border-radius: 25px")
-        # container.layout().addWidget(circle)
 
         self.pie_menu = PieMenu(self)
-        self.window_blocked = False
-
-        # self.setCentralWidget(container)
 
         # WiiiD
 

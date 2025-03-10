@@ -31,7 +31,7 @@ class WiiiD(QThread):
     def run(self):
         if not self.connect_():
             sys.exit()
-        self.wii.rumble(.05)
+        # self.wii.rumble(.05)
         self.setLeds(self.config["leds"][self.currentMap])
         while True:
             btnState = self.wii.state()

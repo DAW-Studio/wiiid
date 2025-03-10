@@ -12,7 +12,8 @@ from quilt.debug import HotReload
 
 def main():
     app = QApplication([])
-    app.setStyleSheet("background-color:white;")
+    with open("resources/style.css") as f:
+        app.setStyleSheet(f.read())
     # window = MainWindow(wiiid)
     window = MainWindow()
     window.show()
@@ -21,8 +22,8 @@ def main():
     # window.pie_menu.show()
     
 
-    # HotReload(window, "<cmd>+s", before=window.wiiid.close).start()
-    HotReload(window, "<cmd>+s").start()
+    HotReload(window, "<cmd>+s", before=window.wiiid.close).start()
+    # HotReload(window, "<cmd>+s").start()
 
     app.exec()
 

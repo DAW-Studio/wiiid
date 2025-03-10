@@ -6,7 +6,8 @@ from PySide6.QtWidgets import (
     QGraphicsWidget,
     QGraphicsScene,
     QGraphicsView,
-    QGraphicsPixmapItem
+    QGraphicsPixmapItem,
+    QSizePolicy
 )
 from PySide6.QtGui import (
     QPixmap,
@@ -18,7 +19,9 @@ from PySide6.QtCore import (
     QTimer
 )
 
+from quilt.layout import VBoxLayout
 from quilt.core import loop
+
 
 # IMPLEMENT GRAPHICS WIDGET INTO QUILT
 # HAVING A WIDGET + A SCENE + A VIEW IS OVERKILL
@@ -26,13 +29,37 @@ from quilt.core import loop
 ACTIVE="resources/images/wiimote/active/"
 INACTIVE="resources/images/wiimote/inactive/"
 
-class WiimoteWidget():
-    def __init__(self):
+
+class WiimoteGraphicsView(QGraphicsView):
+    def __init__(self, parent, scene):
+        super().__init__(scene)
+        self.setScene(scene)
+        self.parent = parent
+        self.setObjectName("wiimote-graphics-view")
+        self.setBackgroundBrush(QBrush(QColor("white")))
+        self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
+        self.setContentsMargins(0,0,0,0)
+        # self.scene().setSceneRect(0, 0, self.width(), self.height())
+        # for i in self.scene().items():
+        #     i.setScale(.35)
+            # i.setPos(self.scene().width()/2, self.scene().height()/2)
+            # self.scene().removeItem(i)
+            # self.scene().addItem(i)
+
+    def resizeEvent(self, event):
+        self.fitInView(self.sceneRect(), Qt.KeepAspectRatio)
+        super().resizeEvent(event)
+
+
+class WiimoteWidget(QWidget):
+    def __init__(self, parent):
+        super().__init__()
+        self.parent = parent
+        self.setAttribute(Qt.WA_StyledBackground, True)
+        self.setObjectName("wiimote-widget")
+        # self.setStyleSheet("background: black;")
         self.scene = QGraphicsScene()
-        front = QGraphicsPixmapItem(QPixmap("./resources/images/wiimote/front.png"))
-        front.setScale(.35)
         back = QGraphicsPixmapItem(QPixmap("./resources/images/wiimote/back.png"))
-        back.setScale(.35)
         self.scene.addItem(back)
 
         self.dpad = ["up","down","left","right"]
@@ -41,18 +68,18 @@ class WiimoteWidget():
         for state, dict_ in ((ACTIVE, self.active), (INACTIVE, self.inactive)):
             for file in os.listdir(state):
                 pixmap = QGraphicsPixmapItem(QPixmap(state+file))
-                pixmap.setScale(.35)
                 if state == ACTIVE: pixmap.hide()
                 name = file.split(".")[0]
                 dict_[name] = pixmap
                 self.scene.addItem(dict_[name])
 
+        front = QGraphicsPixmapItem(QPixmap("./resources/images/wiimote/front.png"))
         self.scene.addItem(front)
 
-        self.view = QGraphicsView()
-        self.view.setScene(self.scene)
-        self.view.setStyleSheet("background-color: white;")
-        self.view.setBackgroundBrush(QBrush(QColor("white")))
+        self.view = WiimoteGraphicsView(self, self.scene)
+        self.setLayout(VBoxLayout([
+            self.view
+        ]))
         
         self._leds = [0,0,0,0]
         
@@ -61,7 +88,6 @@ class WiimoteWidget():
 
         self.blink_state = 0
         # self.blinkLeds()
-
 
     def activate(self, name):
         self.view.viewport().update()

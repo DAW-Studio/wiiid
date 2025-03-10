@@ -39,7 +39,7 @@ class WiiHid:
         else:
             self.device = hid.Device(vendor_id, product_id)
             self.prev_data = 0
-            self.device.write(bytes([0x52, 0x15, 0x00]))
+            # self.device.write(bytes([0x52, 0x15, 0x00]))
             time.sleep(0.1)
             data = self.device.read(32)
             self._leds = [0,0,0,0]

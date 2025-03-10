@@ -1,0 +1,60 @@
+QWidget#centralWidget {
+    background-color: #f0f0f0;
+}
+
+
+/* TITLE BAR */
+
+QWidget#title-bar {
+    background-color: white;
+    border-radius: 0px;
+    border-top-left-radius: 10px;
+    border: none;
+    padding-top: 20px;
+}
+
+QLabel#title {
+    color: #595959;
+    font-size: 16px;
+    font-weight: light;
+    font-family: "Helvetica Neue", sans-serif;
+}
+
+QPushButton#close-button {
+    background-color: #FB5F58;
+    border: none;
+}
+
+
+/* STATUS BAR */
+
+QWidget#status-bar {
+    background-color: white;
+    border-radius: 0px;
+    border-bottom-left-radius: 10px;
+    border: none;
+    padding-bottom: 20px;
+}
+
+
+/* WIIMOTE */
+
+QWidget#wiimote-widget {
+    background-color: white;
+}
+
+QGraphicsView#wiimote-graphics-view {
+    padding: 40px;
+    border: none;
+}
+
+
+/* MAPPING WIDGET */
+
+QWidget#mapping-widget {
+    background-color: #F2F2F2;
+    border-radius: 0px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border: none;
+}

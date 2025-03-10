@@ -18,8 +18,9 @@ class CloseButton(QPushButton):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setFixedSize(12,12)
-        self.setStyleSheet("background-color: red;")
+        self.setObjectName("close-button")
         self.clicked.connect(self.onClick)
+        self.setStyleSheet(f"border-radius: {self.width()/2};")
 
     @Slot()
     def onClick(self, event):
@@ -31,13 +32,12 @@ class TitleBar(QWidget):
     """Custom title bar with a centered search bar, perfectly aligned with macOS buttons."""
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setFixedHeight(28)
+        self.setFixedHeight(32)
         self.setAttribute(Qt.WA_StyledBackground, True)
-        self.setStyleSheet("background-color: white; border-top-right-radius: 0; border-top-left-radius: 12px; border-bottom-left-radius: 0px; border-bottom-right-radius: 0px; border-bottom: .5px solid #959595")
+        self.setObjectName("title-bar")
 
-        self.title = QLabel(self)
-        self.title.setText("WiiiD")
-        self.title.setStyleSheet("color: #959595; font: Menlo;")
+        self.title = QLabel("WiiiD")
+        self.title.setObjectName("title")
 
         layout = HBoxLayout([
             CloseButton(),
