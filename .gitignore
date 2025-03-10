@@ -1,2 +1,10 @@
 
 src/ui/widgets/__pycache__/
+
+src/quilt
+
+src/wiimote/__pycache__/
+
+src/ui/menus/__pycache__/
+
+src/ui/__pycache__/
