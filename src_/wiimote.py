@@ -11,7 +11,7 @@ class Wiiid:
     def __init__(self) -> None:
         if not self.connect():
             sys.exit()
-        self.wii.rumble(.2)
+        # self.wii.rumble(.2)
         self.debug = False
         self.buttons = {
             "a": Button(self, "a"),
