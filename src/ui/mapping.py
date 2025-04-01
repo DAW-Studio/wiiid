@@ -14,9 +14,7 @@ class ToolBar(QWidget):
         super().__init__(parent)
         self.parent = parent
 
-        self.dropdown = DropDown(self, [
-            QA
-        ])
+        self.dropdown = DropDown()
 
         self.setLayout(HBoxLayout([
             self.dropdown

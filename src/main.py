@@ -22,10 +22,10 @@ def main():
     # window.pie_menu.show()
     
 
-    HotReload(window, "<cmd>+s", before=window.wiiid.close).start()
-    # HotReload(window, "<cmd>+s").start()
+    # HotReload(window, "<cmd>+<esc>", before=window.wiiid.close).start()
+    HotReload(window, "<cmd>+<esc>").start()
 
-    app.exec()
+    sys.exit(app.exec())
 
 if __name__ == "__main__":
     main()

@@ -16,6 +16,7 @@ from PySide6.QtWidgets import (
     QSizePolicy
 )
 from PySide6.QtCore import (
+    QTimer,
     Qt,
     QPoint,
     QRect,
@@ -118,7 +119,7 @@ class MainWindow(MainCustomWindow):
     def __init__(self):
         super().__init__()
 
-        self.wiimote_widget = WiimoteWidget(self)
+        self.wiimote_widget = WiimoteWidget()
         self.wiiid = WiiiD(self, self.wiimote_widget)
         self.interface()
 
@@ -136,12 +137,12 @@ class MainWindow(MainCustomWindow):
         status_bar.setObjectName("status-bar")
 
         self.wiimote_section = QWidget()
-        self.wiimote_section.setFixedWidth(260)
         self.wiimote_section.setLayout(VBoxLayout([
             title_bar,
             self.wiimote_widget,
             status_bar
         ]))
+        QTimer.singleShot(1, lambda: self.wiimote_section.setFixedWidth(self.wiimote_widget.width()))
 
         self.mapping_widget = Mapping(self)
 
@@ -159,7 +160,8 @@ class MainWindow(MainCustomWindow):
         # WiiiD
 
     def resizeEvent(self, event):
-        return super().resizeEvent(event)
+        self.wiimote_section.setFixedWidth(self.wiimote_widget.width())
+        super().resizeEvent(event)
 
     def moveEvent(self, event):
         pos = event.pos()
