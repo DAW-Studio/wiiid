@@ -5,10 +5,13 @@ import os
 # sys.path.append(os.path.dirname(__file__))
 
 from PySide6.QtWidgets import QApplication
+from PySide6.QtCore import Qt
 from ui.main_window import MainWindow
 # from wiimote.interface import WiiiD
 from ui.menus.pie import PieMenu
 from quilt.debug import HotReload
+
+QApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
 
 def main():
     app = QApplication([])

@@ -120,8 +120,8 @@ class MainWindow(MainCustomWindow):
         super().__init__()
 
         self.wiimote_widget = WiimoteWidget()
-        self.wiiid = WiiiD(self, self.wiimote_widget)
-        self.interface()
+        # self.wiiid = WiiiD(self, self.wiimote_widget)
+        # self.interface()
 
         self.setTransparentWindow(True)
         self.setFloatingWindow(True)
@@ -142,7 +142,7 @@ class MainWindow(MainCustomWindow):
             self.wiimote_widget,
             status_bar
         ]))
-        QTimer.singleShot(1, lambda: self.wiimote_section.setFixedWidth(self.wiimote_widget.width()))
+        # QTimer.singleShot(1, lambda: self.wiimote_section.setFixedWidth(self.wiimote_widget.width()))
 
         self.mapping_widget = Mapping(self)
 

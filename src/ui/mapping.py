@@ -1,4 +1,5 @@
 from PySide6.QtWidgets import (
+    QPushButton,
     QWidget,
 )
 from PySide6.QtCore import (
@@ -14,11 +15,14 @@ class ToolBar(QWidget):
         super().__init__(parent)
         self.parent = parent
 
-        self.dropdown = DropDown()
 
+        self.button = QPushButton("Mappings", self)
+        self.dropdown = DropDown(self, self.button)
+        self.button.clicked.connect(self.dropdown.showDropdown)
         self.setLayout(HBoxLayout([
-            self.dropdown
+            self.button
         ]))
+
 
 
 class Mapping(QWidget):
