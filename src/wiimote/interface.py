@@ -27,6 +27,7 @@ class WiiiD(QThread):
         self.currentMap = 0
         with open(resource_path("resources/mappings.json")) as f:
             self.config = json.load(f)
+        self.pressed = []
 
     def run(self):
         if not self.connect_():
@@ -50,6 +51,27 @@ class WiiiD(QThread):
 
     def act(self, button, state):
         action, btn = state
+        mappings = self.config["mappings"][0]
+
+        if action == "release" or action == "tap":
+            if btn in mappings["press"]:
+                _map = mappings["press"][btn]
+                if _map["device"] == "keyboard":
+                    actions.run["keyboard"]["release"](self, button, _map["args"])
+
+        
+        
+        if action in mappings:
+            if btn in mappings[action]:
+                print(action, btn)
+                _map = mappings[action][btn]
+                actions.run[_map["device"]][_map["action"]](self, button, _map["args"])
+
+
+
+        return
+
+
         if action == "tap" and btn == "home":
             self.currentMap += 1 if self.currentMap != len(self.config["leds"])-1 else -self.currentMap
             pl = self.wii.leds

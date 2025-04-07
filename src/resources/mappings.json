@@ -4,6 +4,59 @@
     ],
     "mappings": [
         {
+            "press": {
+              "right": {
+                "device": "keyboard",
+                "action": "press",
+                "args": {
+                  "mod": "",
+                  "key": "w"
+                }
+              },
+              "down": {
+                "device": "keyboard",
+                "action": "press",
+                "args": {
+                  "mod": "",
+                  "key": "d"
+                }
+              },
+              "left": {
+                "device": "keyboard",
+                "action": "press",
+                "args": {
+                  "mod": "",
+                  "key": "s"
+                }
+              },
+              "up": {
+                "device": "keyboard",
+                "action": "press",
+                "args": {
+                  "mod": "",
+                  "key": "a"
+                }
+              },
+              "1": {
+                "device": "keyboard",
+                "action": "press",
+                "args": {
+                  "mod": "",
+                  "key": "shift"
+                }
+              },
+              "2": {
+                "device": "keyboard",
+                "action": "press",
+                "args": {
+                  "mod": "",
+                  "key": "space"
+                }
+              }
+            }
+
+        },
+        {
             "tap": {
                 "a": {
                     "device": "keyboard",

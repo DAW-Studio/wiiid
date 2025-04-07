@@ -120,8 +120,8 @@ class MainWindow(MainCustomWindow):
         super().__init__()
 
         self.wiimote_widget = WiimoteWidget()
-        # self.wiiid = WiiiD(self, self.wiimote_widget)
-        # self.interface()
+        self.wiiid = WiiiD(self, self.wiimote_widget)
+        self.interface()
 
         self.setTransparentWindow(True)
         self.setFloatingWindow(True)
@@ -189,7 +189,7 @@ class MainWindow(MainCustomWindow):
         else: 
             # print(data[0])
             btn = data[0].name
-            print(btn)
+            # print(btn)
             if btn == "left":
                 self.wiiid.setLeds([0,0,0,0])
             if btn == "right":
@@ -207,4 +207,3 @@ class MainWindow(MainCustomWindow):
         #     elif not btn and selected.isVisible():
         #         selected.setVisible(False)
         #         unselected.setVisible(True)
-            print(btn)

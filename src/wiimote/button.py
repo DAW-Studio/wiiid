@@ -13,7 +13,7 @@ class Button:
     def state(self, btnState:bool):
         if btnState:
             if self.value == 0:
-                self.pressed()
+                return self.pressed()
             if self.time != -1 and time.time()-self.time > .5 and not self.holding:
                 self.wiiid.heldButtons.append(self)
                 return self.hold()
@@ -25,6 +25,7 @@ class Button:
         self.wiimote_widget.activate(self.name)
         self.value = 1
         self.time = time.time()
+        return ["press", self.name]
 
     def released(self):
         self.wiimote_widget.deactivate(self.name)

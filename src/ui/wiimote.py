@@ -82,6 +82,8 @@ class WiimoteWidget(QWidget):
     #     # for label in self.pixmaps.keys():
     #     #     label.move((new_width - label.width())//2, 0)
     #
+    def activate(self, name):
+        return
     # def activate(self, name):
     #     print("ACTIVATE ", name)
     #     if name in self.dpad:
@@ -92,6 +94,8 @@ class WiimoteWidget(QWidget):
     #         self.inactive[name].setVisible(False)
     #     self.active[name].setVisible(True)
     #
+    def deactivate(self, name):
+        return
     # def deactivate(self, name):
     #     if name in self.dpad:
     #         self.inactive["dpad"].setVisible(True)

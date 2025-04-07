@@ -43,6 +43,10 @@ QWidget#wiimote-widget {
     background-color: white;
 }
 
+QLabel#wiimote-image {
+  background: transparent;
+}
+
 QGraphicsView#wiimote-graphics-view {
     padding: 40px;
     border: none;

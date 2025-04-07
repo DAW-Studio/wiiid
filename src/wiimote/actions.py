@@ -1,10 +1,9 @@
 import time
 import json
-from . import Keyboard, KeyCode
-
+from . import Keyboard, KeyCode, Mouse
 
 k = Keyboard()
-# m = Mouse()
+m = Mouse()
 
 class Debug():
     def __init__(self):
@@ -34,10 +33,14 @@ class KeyboardDevice():
         except KeyError:
             pass
 
+    def press(self, wiiid, btn, args:dict):
+        key, mod = args["key"], args["mod"]
+        k.press(key, mod)
+
     
     def release(self, wiiid, btn, args:dict):
         key, mod = args["key"], args["mod"]
-        k.release()
+        k.release(key)
 
     def cycle(self, wiiid, btn, args:dict):
         keys = args["keys"] 
@@ -52,24 +55,27 @@ class KeyboardDevice():
         k.type(text, delay)
 
 
-# class MouseDevice():
-#     def __init__(self) -> None:
-#         pass
+class MouseDevice():
+    def __init__(self) -> None:
+        pass
 
-#     def click(self, btn, button:str, double:bool):
-#         print(button, double)
+    def click(self, btn, button:str, double:bool):
+        print(button, double)
 
-#     def hold(self, btn, button:str, duration:bool):
-#         print(button, duration)
+    def hold(self, btn, button:str, duration:bool):
+        print(button, duration)
 
-#     def move(self, btn, point:tuple, speed:int):
-#         print(point, speed)
+    def move(self, wiiid, btn, args:dict):
+        for x in range(args["x"]):
+            m.move(1, 0)
+            time.sleep(.01)
+        # print(point, speed)
     
-#     def drag(self, btn, pointA:tuple, pointB:tuple, speed:int):
-#         print(pointA, pointB, speed)
+    def drag(self, btn, pointA:tuple, pointB:tuple, speed:int):
+        print(pointA, pointB, speed)
 
-#     def scroll(self, btn, direction:str, amount:int, speed:int):
-#         print(direction, amount, speed)
+    def scroll(self, btn, direction:str, amount:int, speed:int):
+        print(direction, amount, speed)
 
 
 class WiiidDevice():
@@ -90,23 +96,24 @@ class WiiidDevice():
 
 debug = Debug()
 kd = KeyboardDevice()
-# md = MouseDevice()
+md = MouseDevice()
 wd = WiiidDevice()
 run = {
     "keyboard": {
         "tap": kd.tap,
         "hold": kd.hold,
+        "press": kd.press,
         "release": kd.release,
         "cycle": kd.cycle,
-        "type": kd.type
+        "type": kd.type,
     },
-    # "mouse": {
+    "mouse": {
     #     "click": md.click,
     #     "hold": md.hold,
-    #     "move": md.move,
+        "move": md.move,
     #     "drag": md.drag,
     #     "scroll": md.scroll
-    # },
+    },
     "wiiid": {
         "delay": wd.delay,
         "macro": wd.macro,
